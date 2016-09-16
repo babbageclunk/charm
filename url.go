@@ -247,15 +247,15 @@ func parseV2URL(url *gourl.URL) (*URL, error) {
 func (r *URL) path() string {
 	var parts []string
 	if r.User != "" {
-		parts = append(parts, fmt.Sprintf("~%s", r.User))
+		parts = append(parts, fmt.Sprintf("%s", r.User))
 	}
+	// Name is required.
+	parts = append(parts, r.Name)
 	if r.Series != "" {
 		parts = append(parts, r.Series)
 	}
 	if r.Revision >= 0 {
-		parts = append(parts, fmt.Sprintf("%s-%d", r.Name, r.Revision))
-	} else {
-		parts = append(parts, r.Name)
+		parts = append(parts, fmt.Sprintf("%d", r.Revision))
 	}
 	return strings.Join(parts, "/")
 }
