@@ -212,7 +212,7 @@ var urlTests = []struct {
 	err: `local charm or bundle URL with user name: $URL`,
 }, {
 	s:     "precise/wordpress",
-	exact: "cs:precise/wordpress",
+	exact: "cs:wordpress/precise",
 	url:   &charm.URL{"cs", "", "wordpress", -1, "precise"},
 }, {
 	s:     "foo",
@@ -220,7 +220,7 @@ var urlTests = []struct {
 	url:   &charm.URL{"cs", "", "foo", -1, ""},
 }, {
 	s:     "foo-1",
-	exact: "cs:foo-1",
+	exact: "cs:foo/1",
 	url:   &charm.URL{"cs", "", "foo", 1, ""},
 }, {
 	s:     "n0-n0-n0",
@@ -236,14 +236,14 @@ var urlTests = []struct {
 	url:   &charm.URL{"local", "", "foo", -1, ""},
 }, {
 	s:     "vivid/foo",
-	exact: "cs:vivid/foo",
+	exact: "cs:foo/vivid",
 	url:   &charm.URL{"cs", "", "foo", -1, "vivid"},
 }, {
 	s:   "wily/foo/bar",
 	err: `charm or bundle URL has invalid form: "wily/foo/bar"`,
 }, {
 	s:   "cs:foo/~blah",
-	err: `URL has invalid charm or bundle name: "cs:foo/~blah"`,
+	err: `charm or bundle URL has invalid series: $URL`,
 }, {
 	s:     "babbageclunk/mysql/xenial/20",
 	exact: "cs:babbageclunk/mysql/xenial/20",
@@ -267,7 +267,7 @@ var urlTests = []struct {
 }, {
 	s:     "mysql/trusty",
 	exact: "cs:mysql/trusty",
-	url:   &charm.URL{"cs", "trusty", "mysql", -1, "trusty"},
+	url:   &charm.URL{"cs", "", "mysql", -1, "trusty"},
 }, {
 	s:     "mysql/15",
 	exact: "cs:mysql/15",
@@ -276,6 +276,26 @@ var urlTests = []struct {
 	s:     "mysql",
 	exact: "cs:mysql",
 	url:   &charm.URL{"cs", "", "mysql", -1, ""},
+}, {
+	s:   "wily/mysql/vivid",
+	err: "charm or bundle URL has invalid form: $URL",
+}, {
+	s:   "1",
+	err: `URL has invalid charm or bundle name: $URL`,
+}, {
+	// 	s:   "vivid",
+	// 	err: `URL has invalid charm or bundle name: $URL`,
+	// }, {
+	s:   "vivid/1",
+	err: `URL has invalid charm or bundle name: $URL`,
+}, {
+	s:   "something/nbabbageclunk/mysql/vivid/1",
+	err: "charm or bundle URL has invalid form: $URL",
+}, {
+	// Bundle URLs that come back from the charm store look like this:
+	s:     "cs:bundle/mediawiki-single-1",
+	exact: "cs:mediawiki-single/bundle/1",
+	url:   &charm.URL{"cs", "", "mediawiki-single", 1, "bundle"},
 }}
 
 func (s *URLSuite) TestParseURL(c *gc.C) {
@@ -310,27 +330,27 @@ func (s *URLSuite) TestParseURL(c *gc.C) {
 var inferTests = []struct {
 	vague, exact string
 }{
-	{"foo", "cs:defseries/foo"},
-	{"foo-1", "cs:defseries/foo-1"},
-	{"n0-n0-n0", "cs:defseries/n0-n0-n0"},
-	{"cs:foo", "cs:defseries/foo"},
-	{"local:foo", "local:defseries/foo"},
-	{"series/foo", "cs:series/foo"},
-	{"cs:series/foo", "cs:series/foo"},
-	{"local:series/foo", "local:series/foo"},
-	{"cs:~user/foo", "cs:~user/defseries/foo"},
-	{"cs:~user/series/foo", "cs:~user/series/foo"},
-	{"local:~user/series/foo", "local:~user/series/foo"},
-	{"bs:foo", "bs:defseries/foo"},
-	{"cs:~1/foo", "cs:~1/defseries/foo"},
-	{"cs:foo-1-2", "cs:defseries/foo-1-2"},
+	{"foo", "cs:saucy/foo"},
+	{"foo-1", "cs:saucy/foo-1"},
+	{"n0-n0-n0", "cs:saucy/n0-n0-n0"},
+	{"cs:foo", "cs:saucy/foo"},
+	{"local:foo", "local:saucy/foo"},
+	{"quantal/foo", "cs:quantal/foo"},
+	{"cs:quantal/foo", "cs:quantal/foo"},
+	{"local:quantal/foo", "local:quantal/foo"},
+	{"cs:~user/foo", "cs:~user/saucy/foo"},
+	{"cs:~user/quantal/foo", "cs:~user/quantal/foo"},
+	{"local:~user/quantal/foo", "local:~user/quantal/foo"},
+	{"bs:foo", "bs:saucy/foo"},
+	{"cs:~1/foo", "cs:~1/saucy/foo"},
+	{"cs:foo-1-2", "cs:saucy/foo-1-2"},
 }
 
 func (s *URLSuite) TestInferURL(c *gc.C) {
 	for i, t := range inferTests {
 		c.Logf("test %d", i)
-		comment := gc.Commentf("InferURL(%q, %q)", t.vague, "defseries")
-		inferred, ierr := charm.InferURL(t.vague, "defseries")
+		comment := gc.Commentf("InferURL(%q, %q)", t.vague, "saucy")
+		inferred, ierr := charm.InferURL(t.vague, "saucy")
 		parsed, perr := charm.ParseURL(t.exact)
 		if perr == nil {
 			c.Check(inferred, gc.DeepEquals, parsed, comment)
@@ -345,7 +365,7 @@ func (s *URLSuite) TestInferURL(c *gc.C) {
 			c.Check(ierr.Error(), gc.Matches, expect+".*", comment)
 		}
 	}
-	u, err := charm.InferURL("~blah", "defseries")
+	u, err := charm.InferURL("~blah", "saucy")
 	c.Assert(u, gc.IsNil)
 	c.Assert(err, gc.ErrorMatches, "URL without charm or bundle name: .*")
 }
@@ -358,9 +378,9 @@ var inferNoDefaultSeriesTests = []struct {
 	{"foo-1", "", false},
 	{"cs:foo", "", false},
 	{"cs:~user/foo", "", false},
-	{"series/foo", "cs:series/foo", true},
-	{"cs:series/foo", "cs:series/foo", true},
-	{"cs:~user/series/foo", "cs:~user/series/foo", true},
+	{"vivid/foo", "cs:vivid/foo", true},
+	{"cs:raring/foo", "cs:raring/foo", true},
+	{"cs:~user/utopic/foo", "cs:~user/utopic/foo", true},
 }
 
 func (s *URLSuite) TestInferURLNoDefaultSeries(c *gc.C) {
@@ -401,11 +421,11 @@ var validTests = []struct {
 	{charm.IsValidSeries, "pre cise", false},
 	{charm.IsValidSeries, "pre-cise", false},
 	{charm.IsValidSeries, "pre^cise", false},
-	{charm.IsValidSeries, "prec1se", true},
+	{charm.IsValidSeries, "prec1se", false},
 	{charm.IsValidSeries, "-precise", false},
 	{charm.IsValidSeries, "precise-", false},
 	{charm.IsValidSeries, "precise-1", false},
-	{charm.IsValidSeries, "precise1", true},
+	{charm.IsValidSeries, "precise1", false},
 	{charm.IsValidSeries, "pre-c1se", false},
 }
 
@@ -417,8 +437,8 @@ func (s *URLSuite) TestValidCheckers(c *gc.C) {
 }
 
 func (s *URLSuite) TestMustParseURL(c *gc.C) {
-	url := charm.MustParseURL("cs:series/name")
-	c.Assert(url, gc.DeepEquals, &charm.URL{"cs", "", "name", -1, "series"})
+	url := charm.MustParseURL("cs:precise/name")
+	c.Assert(url, gc.DeepEquals, &charm.URL{"cs", "", "name", -1, "precise"})
 	f := func() { charm.MustParseURL("local:@@/name") }
 	c.Assert(f, gc.PanicMatches, "charm or bundle URL has invalid series: .*")
 	f = func() { charm.MustParseURL("cs:~user") }
@@ -428,10 +448,10 @@ func (s *URLSuite) TestMustParseURL(c *gc.C) {
 }
 
 func (s *URLSuite) TestWithRevision(c *gc.C) {
-	url := charm.MustParseURL("cs:series/name")
+	url := charm.MustParseURL("cs:raring/name")
 	other := url.WithRevision(1)
-	c.Assert(url, gc.DeepEquals, &charm.URL{"cs", "", "name", -1, "series"})
-	c.Assert(other, gc.DeepEquals, &charm.URL{"cs", "", "name", 1, "series"})
+	c.Assert(url, gc.DeepEquals, &charm.URL{"cs", "", "name", -1, "raring"})
+	c.Assert(other, gc.DeepEquals, &charm.URL{"cs", "", "name", 1, "raring"})
 
 	// Should always copy. The opposite behavior is error prone.
 	c.Assert(other.WithRevision(1), gc.Not(gc.Equals), other)
@@ -462,7 +482,7 @@ func (s *URLSuite) TestURLCodecs(c *gc.C) {
 		type doc struct {
 			URL *charm.URL `json:",omitempty" bson:",omitempty" yaml:",omitempty"`
 		}
-		url := charm.MustParseURL("cs:series/name")
+		url := charm.MustParseURL("cs:quantal/name")
 		v0 := doc{url}
 		data, err := codec.Marshal(v0)
 		c.Assert(err, gc.IsNil)
@@ -478,7 +498,7 @@ func (s *URLSuite) TestURLCodecs(c *gc.C) {
 		var vs strDoc
 		err = codec.Unmarshal(data, &vs)
 		c.Assert(err, gc.IsNil)
-		c.Assert(vs.URL, gc.Equals, "cs:series/name")
+		c.Assert(vs.URL, gc.Equals, "cs:name/quantal")
 
 		data, err = codec.Marshal(doc{})
 		c.Assert(err, gc.IsNil)
