@@ -25,37 +25,29 @@ var urlTests = []struct {
 	exact  string
 	url    *charm.URL
 }{{
-	s:     "cs:~user/trusty/name",
-	exact: "cs:user/name/trusty",
-	url:   &charm.URL{"cs", "user", "name", -1, "trusty"},
+	s:   "cs:~user/trusty/name",
+	url: &charm.URL{"cs", "user", "name", -1, "trusty"},
 }, {
-	s:     "cs:~user/wily/name-0",
-	exact: "cs:user/name/wily/0",
-	url:   &charm.URL{"cs", "user", "name", 0, "wily"},
+	s:   "cs:~user/wily/name-0",
+	url: &charm.URL{"cs", "user", "name", 0, "wily"},
 }, {
-	s:     "cs:raring/name",
-	exact: "cs:name/raring",
-	url:   &charm.URL{"cs", "", "name", -1, "raring"},
+	s:   "cs:raring/name",
+	url: &charm.URL{"cs", "", "name", -1, "raring"},
 }, {
-	s:     "cs:xenial/name-42",
-	exact: "cs:name/xenial/42",
-	url:   &charm.URL{"cs", "", "name", 42, "xenial"},
+	s:   "cs:xenial/name-42",
+	url: &charm.URL{"cs", "", "name", 42, "xenial"},
 }, {
-	s:     "local:precise/name-1",
-	exact: "local:name/precise/1",
-	url:   &charm.URL{"local", "", "name", 1, "precise"},
+	s:   "local:precise/name-1",
+	url: &charm.URL{"local", "", "name", 1, "precise"},
 }, {
-	s:     "local:saucy/name",
-	exact: "local:name/saucy",
-	url:   &charm.URL{"local", "", "name", -1, "saucy"},
+	s:   "local:saucy/name",
+	url: &charm.URL{"local", "", "name", -1, "saucy"},
 }, {
-	s:     "local:utopic/n0-0n-n0",
-	exact: "local:n0-0n-n0/utopic",
-	url:   &charm.URL{"local", "", "n0-0n-n0", -1, "utopic"},
+	s:   "local:utopic/n0-0n-n0",
+	url: &charm.URL{"local", "", "n0-0n-n0", -1, "utopic"},
 }, {
-	s:     "cs:~user/name",
-	exact: "cs:user/name",
-	url:   &charm.URL{"cs", "user", "name", -1, ""},
+	s:   "cs:~user/name",
+	url: &charm.URL{"cs", "user", "name", -1, ""},
 }, {
 	s:   "cs:name",
 	url: &charm.URL{"cs", "", "name", -1, ""},
@@ -65,31 +57,31 @@ var urlTests = []struct {
 }, {
 	s:     "http://jujucharms.com/u/user/name/vivid/1",
 	url:   &charm.URL{"cs", "user", "name", 1, "vivid"},
-	exact: "cs:user/name/vivid/1",
+	exact: "cs:~user/vivid/name-1",
 }, {
 	s:     "http://www.jujucharms.com/u/user/name/precise/1",
 	url:   &charm.URL{"cs", "user", "name", 1, "precise"},
-	exact: "cs:user/name/precise/1",
+	exact: "cs:~user/precise/name-1",
 }, {
 	s:     "https://www.jujucharms.com/u/user/name/quantal/1",
 	url:   &charm.URL{"cs", "user", "name", 1, "quantal"},
-	exact: "cs:user/name/quantal/1",
+	exact: "cs:~user/quantal/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name/raring/1",
 	url:   &charm.URL{"cs", "user", "name", 1, "raring"},
-	exact: "cs:user/name/raring/1",
+	exact: "cs:~user/raring/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name/saucy",
 	url:   &charm.URL{"cs", "user", "name", -1, "saucy"},
-	exact: "cs:user/name/saucy",
+	exact: "cs:~user/saucy/name",
 }, {
 	s:     "https://jujucharms.com/u/user/name/1",
 	url:   &charm.URL{"cs", "user", "name", 1, ""},
-	exact: "cs:user/name/1",
+	exact: "cs:~user/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name",
 	url:   &charm.URL{"cs", "user", "name", -1, ""},
-	exact: "cs:user/name",
+	exact: "cs:~user/name",
 }, {
 	s:     "https://jujucharms.com/name",
 	url:   &charm.URL{"cs", "", "name", -1, ""},
@@ -97,31 +89,31 @@ var urlTests = []struct {
 }, {
 	s:     "https://jujucharms.com/name/utopic",
 	url:   &charm.URL{"cs", "", "name", -1, "utopic"},
-	exact: "cs:name/utopic",
+	exact: "cs:utopic/name",
 }, {
 	s:     "https://jujucharms.com/name/1",
 	url:   &charm.URL{"cs", "", "name", 1, ""},
-	exact: "cs:name/1",
+	exact: "cs:name-1",
 }, {
 	s:     "https://jujucharms.com/name/vivid/1",
 	url:   &charm.URL{"cs", "", "name", 1, "vivid"},
-	exact: "cs:name/vivid/1",
+	exact: "cs:vivid/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name/wily/1/",
 	url:   &charm.URL{"cs", "user", "name", 1, "wily"},
-	exact: "cs:user/name/wily/1",
+	exact: "cs:~user/wily/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name/xenial/",
 	url:   &charm.URL{"cs", "user", "name", -1, "xenial"},
-	exact: "cs:user/name/xenial",
+	exact: "cs:~user/xenial/name",
 }, {
 	s:     "https://jujucharms.com/u/user/name/1/",
 	url:   &charm.URL{"cs", "user", "name", 1, ""},
-	exact: "cs:user/name/1",
+	exact: "cs:~user/name-1",
 }, {
 	s:     "https://jujucharms.com/u/user/name/",
 	url:   &charm.URL{"cs", "user", "name", -1, ""},
-	exact: "cs:user/name",
+	exact: "cs:~user/name",
 }, {
 	s:     "https://jujucharms.com/name/",
 	url:   &charm.URL{"cs", "", "name", -1, ""},
@@ -129,15 +121,15 @@ var urlTests = []struct {
 }, {
 	s:     "https://jujucharms.com/name/precise/",
 	url:   &charm.URL{"cs", "", "name", -1, "precise"},
-	exact: "cs:name/precise",
+	exact: "cs:precise/name",
 }, {
 	s:     "https://jujucharms.com/name/1/",
 	url:   &charm.URL{"cs", "", "name", 1, ""},
-	exact: "cs:name/1",
+	exact: "cs:name-1",
 }, {
 	s:     "https://jujucharms.com/name/quantal/1/",
 	url:   &charm.URL{"cs", "", "name", 1, "quantal"},
-	exact: "cs:name/quantal/1",
+	exact: "cs:quantal/name-1",
 }, {
 	s:   "https://jujucharms.com/",
 	err: `URL has invalid charm or bundle name: $URL`,
@@ -212,7 +204,7 @@ var urlTests = []struct {
 	err: `local charm or bundle URL with user name: $URL`,
 }, {
 	s:     "precise/wordpress",
-	exact: "cs:wordpress/precise",
+	exact: "cs:precise/wordpress",
 	url:   &charm.URL{"cs", "", "wordpress", -1, "precise"},
 }, {
 	s:     "foo",
@@ -220,7 +212,7 @@ var urlTests = []struct {
 	url:   &charm.URL{"cs", "", "foo", -1, ""},
 }, {
 	s:     "foo-1",
-	exact: "cs:foo/1",
+	exact: "cs:foo-1",
 	url:   &charm.URL{"cs", "", "foo", 1, ""},
 }, {
 	s:     "n0-n0-n0",
@@ -236,7 +228,7 @@ var urlTests = []struct {
 	url:   &charm.URL{"local", "", "foo", -1, ""},
 }, {
 	s:     "vivid/foo",
-	exact: "cs:foo/vivid",
+	exact: "cs:vivid/foo",
 	url:   &charm.URL{"cs", "", "foo", -1, "vivid"},
 }, {
 	s:   "wily/foo/bar",
@@ -246,31 +238,31 @@ var urlTests = []struct {
 	err: `charm or bundle URL has invalid series: $URL`,
 }, {
 	s:     "babbageclunk/mysql/xenial/20",
-	exact: "cs:babbageclunk/mysql/xenial/20",
+	exact: "cs:~babbageclunk/xenial/mysql-20",
 	url:   &charm.URL{"cs", "babbageclunk", "mysql", 20, "xenial"},
 }, {
 	s:     "babbageclunk/mysql/wily",
-	exact: "cs:babbageclunk/mysql/wily",
+	exact: "cs:~babbageclunk/wily/mysql",
 	url:   &charm.URL{"cs", "babbageclunk", "mysql", -1, "wily"},
 }, {
 	s:     "babbageclunk/mysql/10",
-	exact: "cs:babbageclunk/mysql/10",
+	exact: "cs:~babbageclunk/mysql-10",
 	url:   &charm.URL{"cs", "babbageclunk", "mysql", 10, ""},
 }, {
 	s:     "mysql/quantal/15",
-	exact: "cs:mysql/quantal/15",
+	exact: "cs:quantal/mysql-15",
 	url:   &charm.URL{"cs", "", "mysql", 15, "quantal"},
 }, {
 	s:     "babbageclunk/mysql",
-	exact: "cs:babbageclunk/mysql",
+	exact: "cs:~babbageclunk/mysql",
 	url:   &charm.URL{"cs", "babbageclunk", "mysql", -1, ""},
 }, {
 	s:     "mysql/trusty",
-	exact: "cs:mysql/trusty",
+	exact: "cs:trusty/mysql",
 	url:   &charm.URL{"cs", "", "mysql", -1, "trusty"},
 }, {
 	s:     "mysql/15",
-	exact: "cs:mysql/15",
+	exact: "cs:mysql-15",
 	url:   &charm.URL{"cs", "", "mysql", 15, ""},
 }, {
 	s:     "mysql",
@@ -294,7 +286,7 @@ var urlTests = []struct {
 }, {
 	// Bundle URLs that come back from the charm store look like this:
 	s:     "cs:bundle/mediawiki-single-1",
-	exact: "cs:mediawiki-single/bundle/1",
+	exact: "cs:bundle/mediawiki-single-1",
 	url:   &charm.URL{"cs", "", "mediawiki-single", 1, "bundle"},
 }}
 
@@ -498,7 +490,7 @@ func (s *URLSuite) TestURLCodecs(c *gc.C) {
 		var vs strDoc
 		err = codec.Unmarshal(data, &vs)
 		c.Assert(err, gc.IsNil)
-		c.Assert(vs.URL, gc.Equals, "cs:name/quantal")
+		c.Assert(vs.URL, gc.Equals, "cs:quantal/name")
 
 		data, err = codec.Marshal(doc{})
 		c.Assert(err, gc.IsNil)

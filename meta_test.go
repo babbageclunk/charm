@@ -514,12 +514,12 @@ func (s *MetaSuite) TestSeries(c *gc.C) {
 	c.Assert(err, gc.IsNil)
 	c.Check(meta.Series, gc.HasLen, 0)
 	charmMeta := fmt.Sprintf("%s\nseries:", dummyMetadata)
-	for _, seriesName := range []string{"precise", "trusty", "arch"} {
+	for _, seriesName := range []string{"precise", "trusty", "centos7"} {
 		charmMeta = fmt.Sprintf("%s\n    - %s", charmMeta, seriesName)
 	}
 	meta, err = charm.ReadMeta(strings.NewReader(charmMeta))
 	c.Assert(err, gc.IsNil)
-	c.Assert(meta.Series, gc.DeepEquals, []string{"precise", "trusty", "arch"})
+	c.Assert(meta.Series, gc.DeepEquals, []string{"precise", "trusty", "centos7"})
 }
 
 func (s *MetaSuite) TestInvalidSeries(c *gc.C) {
